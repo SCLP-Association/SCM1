@@ -26,7 +26,7 @@
     <div class="container-fluid" id="container-in" style="display:none;">
       <div class="row">
         <div class="col-md-3">
-          <div class="list-group">
+          <div class="list-group" id="articles-grp">
             <a id="inc" class="list-group-item">Tinte</a>
             <a id="paper" class="list-group-item">Papier</a>
             <a id="office" class="list-group-item">Büroartikel</a>
@@ -39,22 +39,43 @@
               <input type="text" class="form-control" id="lieferantInput" placeholder="Lieferant">
               <label>Ort</label>
               <input type="text" class="form-control" id="ortInput" placeholder="Ort">
-              <label>Lieferzeit</label>
-              <div class="row">
-                <div class="col-md-6"><input type="text" class="form-control" id="timeFromInput" placeholder="von"></div>
-                <div class="col-md-6"><input type="text" class="form-control" id="timeToInput" placeholder="bis"></div>
-              </div>
               <label>Ranking</label>
               <div class="row">
                 <div class="col-md-6"><input type="text" class="form-control" id="rankFromInput" placeholder="von"></div>
                 <div class="col-md-6"><input type="text" class="form-control" id="rankToInput" placeholder="bis"></div>
-              </div>                   
+              </div>
+              <label>Bewertung</label>
+              <div class="row">
+                <div class="col-md-12 radio">
+                  <label>
+                    <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>
+                    Gesamt
+                  </label>
+                </div>
+                <div class="col-md-12 radio">
+                  <label>
+                    <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+                    Jahr
+                  </label>
+                </div>
+                <div class="col-md-12 radio">
+                  <label>
+                    <input type="radio" name="optionsRadios" id="optionsRadios3" value="option3">
+                    Quartal
+                  </label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12" style="height:30px;">
+                  <button type="button" class="btn btn-success" style="position:absolute;right:15px;">Aktualisieren</button>
+                </div>                     
+              </div>               
             </div>
           </div>  
         </div>
 
         <div class="col-md-9">
-          <table id="table-in" class="table" style="display:none;">
+          <table id="table-in" class="table table-hover" style="display:none;">
             <tr>
               <th>#</th>
               <th>Name</th>
@@ -120,13 +141,18 @@
               <label>Name</label>
               <input type="text" class="form-control" id="lieferantInput" placeholder="Name">
               <label>Ort</label>
-              <input type="text" class="form-control" id="ortInput" placeholder="Ort">             
+              <input type="text" class="form-control" id="ortInput" placeholder="Ort">
+              <div class="row" style="margin-top:10px">
+                <div class="col-md-12" style="height:30px;">
+                  <button type="button" class="btn btn-success" style="position:absolute;right:15px;">Aktualisieren</button>
+                </div>                     
+              </div>           
             </div>
           </div>
         </div>
 
         <div class="col-md-9">
-          <table id="table-out" class="table">
+          <table id="table-out" class="table table-hover">
             <tr>
               <th>#</th>
               <th>Name</th>
@@ -178,12 +204,17 @@
               <div class="row">
                 <div class="col-md-6"><input type="text" class="form-control" id="rankFromInput" placeholder="von"></div>
                 <div class="col-md-6"><input type="text" class="form-control" id="rankToInput" placeholder="bis"></div>
-              </div>                   
+              </div>
+              <div class="row" style="margin-top:10px">
+                <div class="col-md-12" style="height:30px;">
+                  <button type="button" class="btn btn-success" style="position:absolute;right:15px;">Aktualisieren</button>
+                </div>                     
+              </div>                    
             </div>
           </div>
         </div>
         <div class="col-md-9">
-          <table class="table">
+          <table class="table table-hover">
             <tr>
               <th>#</th>
               <th>Datum</th>
@@ -229,6 +260,6 @@
       </div>
     </div>
 
-    <script src="../js/menu.js" type="text/javascript"></script>
+    <script src="../js/scm.js" type="text/javascript"></script>
   </body>
 </html>

@@ -1,3 +1,29 @@
+function getArticles() {
+	$.ajax({
+		type: "GET",
+		url: "http://www.lvps87-230-14-183.dedicated.hosteurope.de/articles.php",
+		dataType: "jsonp",
+		success:	function(articlesResult) {
+			if(articlesResult.successful){
+				// HTML generieren
+				articlesResult.forEach(function(entry) {
+				    $("#articles-grp").append("<a id=" + entry + " class='list-group-item'>" + entry + "</a>");
+				});
+			}else {
+				alert("Keine Artikel in der Datenbank vorhanden!");
+			}
+		},
+	});
+}
+
+function getRanking(durance, grade, count, countAll) {
+	var rDurance = 100/(3*durance);
+	var rGrade = 5*grade;
+	var rCount = (100*count)/(6*countAll);
+	var ranking = rDurance + rGrade + rCount;
+	return ranking;
+}
+
 $(document).ready(function () {
 	var anchor;
 	anchor = window.location.hash;
@@ -29,9 +55,19 @@ $(document).ready(function () {
 	} else if(anchor === '#order') {
 		$("#container-order").show();
 	}
+
+	//getArticles();
 });
 
+// Generated Click-Handler for articles
+/*$("#articles-grp>a").click(function() {
+	// Jeder Link lässt Tabelle erscheinen und aktualisiert Daten!
+});*/
+//-------
+
+
 $("#in-li").click(function() {
+
 	$("#container-out").hide();
 	$("#container-order").hide();
 	$("#container-in").show();
