@@ -1,15 +1,43 @@
 function getArticles() {
 	$.ajax({
 		type: "GET",
-		url: "http://www.lvps87-230-14-183.dedicated.hosteurope.de/articles.php",
+		url: "../articles.php",
 		dataType: "jsonp",
 		success:	function(articlesResult) {
 			if(articlesResult.successful){
 				// HTML generieren
-				articlesResult.forEach(function(entry) {
-				    $("#articles-grp").append("<a id=" + entry + " class='list-group-item'>" + entry + "</a>");
+				$.each(articlesResult, function(index, entry) {
+					if(index !== 'successful') {
+					  	$("#articles-grp").append("<a id=" + entry[0] + " class='list-group-item'>" + entry[1] + "</a>");
+					  	$("#" + entry[0]).click(function() {
+							// Jeder Link lässt Tabelle erscheinen und aktualisiert Daten!
+							//$("#container-in").show();
+							$("#articles-grp > a").removeClass("active");
+							$("#"+entry[0]+"").addClass("active");
+							$("#table-in").show();
+							$.ajax({
+								type: "POST",
+								url: "../buy.php",
+								dataType: "jsonp",
+								data: {id: entry[0]},
+								success:	function(buyResult) {
+									if(buyResult.successful){
+										// HTML generieren
+										$.each(buyResult, function(index, value) {
+											if(index !== 'successful') {
+												$("#table-in > tbody").remove("tr:nth-cild(2)");
+												$("#table-in > tbody").append("<tr><td>"+value[0]+"</td><td>"+value[1]+"</td><td>"+value[2]+"</td><td>"+value[3]+"</td><td>3 Tage</td><td>100</td><td>500</td><td>85</td></tr>");
+											}
+										});
+									} else {
+										alert("Keine Lieferanten in der Datenbank vorhanden!");
+									}
+								},
+							});
+						});
+					}
 				});
-			}else {
+			} else {
 				alert("Keine Artikel in der Datenbank vorhanden!");
 			}
 		},
@@ -28,7 +56,7 @@ $(document).ready(function () {
 	var anchor;
 	anchor = window.location.hash;
 
-	if(anchor === '#inc') {
+	/*if(anchor === '#inc') {
 		$("#container-in").show();
 		$("#inc").addClass("active");
 		$("#table-in").show();
@@ -54,15 +82,13 @@ $(document).ready(function () {
 		$("#table-out").show();
 	} else if(anchor === '#order') {
 		$("#container-order").show();
-	}
+	}*/
 
-	//getArticles();
+	getArticles();
 });
 
-// Generated Click-Handler for articles
-/*$("#articles-grp>a").click(function() {
-	// Jeder Link lässt Tabelle erscheinen und aktualisiert Daten!
-});*/
+//Generated Click-Handler for articles
+//$("#articles-grp>a")
 //-------
 
 
@@ -72,13 +98,13 @@ $("#in-li").click(function() {
 	$("#container-order").hide();
 	$("#container-in").show();
 
-	if($("#paper").hasClass("active")) {
+	/*if($("#paper").hasClass("active")) {
 		location.hash = '#paper';
 	} else if($("#office").hasClass("active")) {
 		location.hash = '#office';
 	} else {
 		location.hash = '#inc';
-	}
+	}*/
 });
 
 $("#out-li").click(function() {
@@ -88,10 +114,8 @@ $("#out-li").click(function() {
 
 	if($("#wholesalers").hasClass("active")) {
 		location.hash = '#wholesalers';
-	} else if($("#persons").hasClass("active")) {
-		location.hash = '#persons';
 	} else {
-		location.hash = '#centrals';
+		location.hash = '#persons';
 	}
 });
 
@@ -102,7 +126,7 @@ $("#order-li").click(function() {
 	$("#container-order").show();
 });
 
-$("#inc").click(function() {
+/*$("#inc").click(function() {
 	location.hash = '#inc';
 	$("#paper").removeClass("active");
 	$("#office").removeClass("active");
@@ -124,15 +148,7 @@ $("#office").click(function() {
 	$("#inc").removeClass("active");
 	$("#office").addClass("active");
 	$("#table-in").show();
-});
-
-$("#centrals").click(function() {
-	location.hash = '#centrals';
-	$("#persons").removeClass("active");
-	$("#wholesalers").removeClass("active");
-	$("#centrals").addClass("active");
-	$("#table-out").show();
-});
+});*/
 
 $("#wholesalers").click(function() {
 	location.hash = '#wholesalers';
