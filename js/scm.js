@@ -6,6 +6,7 @@ function getArticles() {
 		success:	function(articlesResult) {
 			if(articlesResult.successful){
 				// HTML generieren
+				$("#articles-grp > *").remove();
 				$.each(articlesResult, function(index, entry) {
 					if(index !== 'successful') {
 					  	$("#articles-grp").append("<a id=" + entry[0] + " class='list-group-item'>" + entry[1] + "</a>");
@@ -23,12 +24,17 @@ function getArticles() {
 								success:	function(buyResult) {
 									if(buyResult.successful){
 										// HTML generieren
-										$.each(buyResult, function(index, value) {
-											if(index !== 'successful') {
-												$("#table-in > tbody").remove("tr:nth-cild(2)");
-												$("#table-in > tbody").append("<tr><td>"+value[0]+"</td><td>"+value[1]+"</td><td>"+value[2]+"</td><td>"+value[3]+"</td><td>3 Tage</td><td>100</td><td>500</td><td>85</td></tr>");
-											}
-										});
+										$("#table-in > tbody").remove();
+										$("#table-in").append("<tr><th>Firma</th><th>Ort</th><th>Email</th><th>Telefon</th><th>Lieferdauer</th><th>min. Menge</th><th>max. Menge</th><th>Ranking</th></tr>");
+										var count = buyResult.count * 3;
+										for(var i = 0; i < count; i++) {
+											var grade = parseInt(buyResult[i+2]);
+											var dur = buyResult[i+1][0];
+											var ranking = getRanking(dur, grade, 100, 200);
+											$("#table-in > tbody").append("<tr><td>"+buyResult[i][1]+"</td><td>"+buyResult[i][2]+"</td><td>"+buyResult[i][3]+"</td><td>"+buyResult[i][4]+"</td><td>"+buyResult[i+1][0]+"</td><td>"+buyResult[i+1][2]+"</td><td>"+buyResult[i+1][1]+"</td><td>"+ranking+"</td></tr>");
+											i++;
+											i++;
+										};
 									} else {
 										alert("Keine Lieferanten in der Datenbank vorhanden!");
 									}
@@ -44,79 +50,117 @@ function getArticles() {
 	});
 }
 
+function getTableWholesalers() {
+	$.ajax({
+		type: "POST",
+		url: "../sell.php",
+		dataType: "jsonp",
+		data: {type: 0},
+		success:	function(wholesalers) {
+			if(wholesalers.successful){
+				// HTML generieren
+				$("#table-out > tbody").remove();
+				$("#table-out").append("<tbody><tr><th>Name</th><th>Ort</th><th>Straße</th><th>Abonnement</th></tr></tbody>");
+				$.each(wholesalers, function(index, entry) {
+					if(index !== 'successful') {
+						$("#table-out").append("<tr><td>"+entry[0]+"</td><td>"+entry[1]+"</td><td>"+entry[2]+"</td><td>"+entry[3]+"</td></td>");
+					}
+				});
+			} else {
+				alert("Keine Grossisten in der Datenbank vorhanden!");
+			}
+		},
+	});
+}
+
+function getTablePersons() {
+	$.ajax({
+		type: "POST",
+		url: "../sell.php",
+		dataType: "jsonp",
+		data: {type: 1},
+		success:	function(persons) {
+			if(persons.successful){
+				// HTML generieren
+				$("#table-out > tbody").remove();
+				$("#table-out").append("<tbody><tr><th>Name</th><th>Ort</th><th>Straße</th><th>Abonnement</th></tr></tbody>");
+				$.each(persons, function(index, entry) {
+					if(index !== 'successful') {
+						$("#table-out").append("<tr><td>"+entry[0]+"</td><td>"+entry[1]+"</td><td>"+entry[2]+"</td><td>"+entry[3]+"</td></td>");
+					}
+				});
+			} else {
+				alert("Keine Personen in der Datenbank vorhanden!");
+			}
+		},
+	});
+}
+
+function getTableOrder() {
+	$.ajax({
+		type: "GET",
+		url: "../order.php",
+		dataType: "jsonp",
+		success:	function(order) {
+			if(order.successful){
+				// HTML generieren
+				$("#table-order > tbody").remove();
+				$("#table-order").append("<tbody><tr><th>Firma</th><th>Ort</th><th>Bestelldatum</th><th>Lieferdatum</th><th>Bewertung</th></tr></tbody>");
+				$.each(order, function(index, entry) {
+					if(index !== 'successful') {
+						$("#table-order > tbody").append("<tr><td>"+entry[0]+"</td><td>"+entry[1]+"</td><td>"+entry[2]+"</td><td>"+entry[3]+"</td><td>"+entry[4]+"</td></td>");
+					}
+				});
+			} else {
+				alert("Keine Personen in der Datenbank vorhanden!");
+			}
+		},
+	});
+}
+
 function getRanking(durance, grade, count, countAll) {
 	var rDurance = 100/(3*durance);
 	var rGrade = 5*grade;
 	var rCount = (100*count)/(6*countAll);
 	var ranking = rDurance + rGrade + rCount;
-	return ranking;
+	return parseInt(ranking);
 }
 
 $(document).ready(function () {
 	var anchor;
 	anchor = window.location.hash;
 
-	/*if(anchor === '#inc') {
+	if(anchor === '#buy') {
+		$("#container-out").hide();
+		$("#container-order").hide();
+		getArticles();
 		$("#container-in").show();
-		$("#inc").addClass("active");
-		$("#table-in").show();
-	} else if(anchor === '#paper') {
-		$("#container-in").show();
-		$("#paper").addClass("active");
-		$("#table-in").show();
-	} else if(anchor === '#office') {
-		$("#container-in").show();
-		$("#office").addClass("active");
-		$("#table-in").show();
-	} else if(anchor === '#centrals') {
+	} else if(anchor === '#sell') {
+		$("#container-in").hide();
+		$("#container-order").hide();
 		$("#container-out").show();
-		$("#centrals").addClass("active");
-		$("#table-out").show();
-	} else if(anchor === '#wholesalers') {
-		$("#container-out").show();
-		$("#wholesalers").addClass("active");
-		$("#table-out").show();
-	} else if(anchor === '#persons') {
-		$("#container-out").show();
-		$("#persons").addClass("active");
-		$("#table-out").show();
 	} else if(anchor === '#order') {
+		$("#container-in").hide();
+		$("#container-out").hide();
 		$("#container-order").show();
-	}*/
-
-	getArticles();
+		getTableOrder();
+	}
 });
-
-//Generated Click-Handler for articles
-//$("#articles-grp>a")
-//-------
 
 
 $("#in-li").click(function() {
-
+	location.hash = '#buy';
 	$("#container-out").hide();
 	$("#container-order").hide();
+	getArticles();
 	$("#container-in").show();
-
-	/*if($("#paper").hasClass("active")) {
-		location.hash = '#paper';
-	} else if($("#office").hasClass("active")) {
-		location.hash = '#office';
-	} else {
-		location.hash = '#inc';
-	}*/
 });
 
 $("#out-li").click(function() {
+	location.hash = '#sell';
 	$("#container-in").hide();
 	$("#container-order").hide();
 	$("#container-out").show();
-
-	if($("#wholesalers").hasClass("active")) {
-		location.hash = '#wholesalers';
-	} else {
-		location.hash = '#persons';
-	}
 });
 
 $("#order-li").click(function() {
@@ -124,46 +168,21 @@ $("#order-li").click(function() {
 	$("#container-in").hide();
 	$("#container-out").hide();
 	$("#container-order").show();
+	getTableOrder();
 });
-
-/*$("#inc").click(function() {
-	location.hash = '#inc';
-	$("#paper").removeClass("active");
-	$("#office").removeClass("active");
-	$("#inc").addClass("active");
-	$("#table-in").show();
-});
-
-$("#paper").click(function() {
-	location.hash = '#paper';
-	$("#inc").removeClass("active");
-	$("#office").removeClass("active");
-	$("#paper").addClass("active");
-	$("#table-in").show();
-});
-
-$("#office").click(function() {
-	location.hash = '#office';
-	$("#paper").removeClass("active");
-	$("#inc").removeClass("active");
-	$("#office").addClass("active");
-	$("#table-in").show();
-});*/
 
 $("#wholesalers").click(function() {
-	location.hash = '#wholesalers';
-	$("#centrals").removeClass("active");
 	$("#persons").removeClass("active");
 	$("#wholesalers").addClass("active");
 	$("#table-out").show();
+	getTableWholesalers();
 });
 
 $("#persons").click(function() {
-	location.hash = '#persons';
-	$("#centrals").removeClass("active");
 	$("#wholesalers").removeClass("active");
 	$("#persons").addClass("active");
 	$("#table-out").show();
+	getTablePersons();
 });
 
 $('.datepicker').datepicker();
