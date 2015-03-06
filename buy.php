@@ -10,7 +10,14 @@ if(!$db)
 }
 
 $pid = $_POST['id'];
+
 $sqlQuery = "SELECT p.id,firma,ort,email,telefon_nr FROM erp.person p LEFT JOIN erp.lieferanten_betriebsmittel l ON (p.id = l.person_id) WHERE l.betriebsmittel_id = '$pid'";
+if($_POST['lieferant'] != "") {
+	$sqlQuery .= "AND firma LIKE '%".$_POST['lieferant']."%'";
+}
+if($_POST['ort'] != "") {
+	$sqlQuery .= "AND ort LIKE '%".$_POST['ort']."%'";
+}
 $result = mysqli_query($db, $sqlQuery);
 $rows = $result->num_rows;
 $successful = ($rows >= 1);

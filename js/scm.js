@@ -1,3 +1,33 @@
+function ajaxBuy(button) {
+	var lieferant = $("#lieferantInput").val();
+	var ort = $("#ortInput").val();
+
+	$.ajax({
+		type: "POST",
+		url: "../buy.php",
+		dataType: "jsonp",
+		data: {id: button, lieferant: lieferant, ort: ort},
+		success:	function(buyResult) {
+			if(buyResult.successful){
+				// HTML generieren
+				$("#table-in > tbody").remove();
+				$("#table-in").append("<tr><th>Firma</th><th>Ort</th><th>Email</th><th>Telefon</th><th>Lieferdauer</th><th>min. Menge</th><th>max. Menge</th><th>Ranking</th></tr>");
+				var count = buyResult.count * 3;
+				for(var i = 0; i < count; i++) {
+					var grade = parseInt(buyResult[i+2]);
+					var dur = buyResult[i+1][0];
+					var ranking = getRanking(dur, grade, 100, 200);
+					$("#table-in > tbody").append("<tr><td>"+buyResult[i][1]+"</td><td>"+buyResult[i][2]+"</td><td>"+buyResult[i][3]+"</td><td>"+buyResult[i][4]+"</td><td>"+buyResult[i+1][0]+"</td><td>"+buyResult[i+1][2]+"</td><td>"+buyResult[i+1][1]+"</td><td>"+ranking+"</td></tr>");
+					i++;
+					i++;
+				};
+			} else {
+				alert("Keine Treffer in der Datenbank vorhanden!");
+			}
+		},
+	});
+}
+
 function getArticles() {
 	$.ajax({
 		type: "GET",
@@ -16,30 +46,7 @@ function getArticles() {
 							$("#articles-grp > a").removeClass("active");
 							$("#"+entry[0]+"").addClass("active");
 							$("#table-in").show();
-							$.ajax({
-								type: "POST",
-								url: "../buy.php",
-								dataType: "jsonp",
-								data: {id: entry[0]},
-								success:	function(buyResult) {
-									if(buyResult.successful){
-										// HTML generieren
-										$("#table-in > tbody").remove();
-										$("#table-in").append("<tr><th>Firma</th><th>Ort</th><th>Email</th><th>Telefon</th><th>Lieferdauer</th><th>min. Menge</th><th>max. Menge</th><th>Ranking</th></tr>");
-										var count = buyResult.count * 3;
-										for(var i = 0; i < count; i++) {
-											var grade = parseInt(buyResult[i+2]);
-											var dur = buyResult[i+1][0];
-											var ranking = getRanking(dur, grade, 100, 200);
-											$("#table-in > tbody").append("<tr><td>"+buyResult[i][1]+"</td><td>"+buyResult[i][2]+"</td><td>"+buyResult[i][3]+"</td><td>"+buyResult[i][4]+"</td><td>"+buyResult[i+1][0]+"</td><td>"+buyResult[i+1][2]+"</td><td>"+buyResult[i+1][1]+"</td><td>"+ranking+"</td></tr>");
-											i++;
-											i++;
-										};
-									} else {
-										alert("Keine Lieferanten in der Datenbank vorhanden!");
-									}
-								},
-							});
+							ajaxBuy(entry[0]);
 						});
 					}
 				});
@@ -51,11 +58,14 @@ function getArticles() {
 }
 
 function getTableWholesalers() {
+	var lieferant = $("#lieferantInputS").val();
+	var ort = $("#ortInputS").val();
+
 	$.ajax({
 		type: "POST",
 		url: "../sell.php",
 		dataType: "jsonp",
-		data: {type: 0},
+		data: {type: 0, lieferant: lieferant, ort: ort},
 		success:	function(wholesalers) {
 			if(wholesalers.successful){
 				// HTML generieren
@@ -74,11 +84,14 @@ function getTableWholesalers() {
 }
 
 function getTablePersons() {
+	var lieferant = $("#lieferantInputS").val();
+	var ort = $("#ortInputS").val();
+
 	$.ajax({
 		type: "POST",
 		url: "../sell.php",
 		dataType: "jsonp",
-		data: {type: 1},
+		data: {type: 1, lieferant: lieferant, ort: ort},
 		success:	function(persons) {
 			if(persons.successful){
 				// HTML generieren
@@ -183,6 +196,19 @@ $("#persons").click(function() {
 	$("#persons").addClass("active");
 	$("#table-out").show();
 	getTablePersons();
+});
+
+$("#filter-in").click(function() {
+	var buttonId = $("#articles-grp > a.active").attr("id");
+	ajaxBuy(buttonId);
+});
+
+$("#refreshSell").click(function() {
+	if ($("#wholesalers.active").attr("id") == "wholesalers") {
+		getTableWholesalers();
+	} else {
+		getTablePersons();
+	}
 });
 
 $('.datepicker').datepicker();

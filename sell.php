@@ -18,6 +18,12 @@ if($_POST['type'] == 0) {
 }
 
 $sqlQuery = "SELECT empfaengername,liefer_ort,lieferadresse,abonnement FROM erp.debitor WHERE kennzeichen = '$type'";
+if($_POST['lieferant'] != "") {
+	$sqlQuery .= "AND empfaengername LIKE '%".$_POST['lieferant']."%'";
+}
+if($_POST['ort'] != "") {
+	$sqlQuery .= "AND liefer_ort LIKE '%".$_POST['ort']."%'";
+}
 $result = mysqli_query($db, $sqlQuery);
 $rows = $result->num_rows;
 $successful = ($rows >= 1);
