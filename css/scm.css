@@ -1,0 +1,27 @@
+.scm-rating > div {
+	border-radius: 5px;
+	width: 30px;
+	height: 30px;
+	color: white;
+	text-align: center;
+	vertical-align: middle;
+	border-color: grey;
+	border-width: 5px;
+	border-style: solid;
+}
+
+.scm-rating-low > div {
+	background: #d9534f !important;
+}
+
+.scm-rating-mid > div {
+	background: #f0ad4e !important;
+}
+
+.scm-rating-semi > div {
+	background: #428bca !important;
+}
+
+.scm-rating-high > div {
+	background: #5cb85c !important;
+}

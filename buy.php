@@ -37,7 +37,10 @@ for($i=0; $i < $rows; $i++) {
 	array_push($seller, $array_Kreditor);
 
 	$id = $mysql_array[0];
-	$sqlQueryRank = "SELECT bewertung FROM erp.auftraege_bestellung b  WHERE b.person_id = '$id'";
+	$sqlQueryRank = "SELECT bewertung FROM erp.auftraege_bestellung b WHERE b.person_id = '$id'";
+	if($_POST['date'] != "") {
+		$sqlQueryRank .= "AND bestelldatum >= '".$_POST['date']."'";
+	}
 	$resultRank = mysqli_query($db, $sqlQueryRank);
 	$rowsRank = $resultRank->num_rows;
 	$ranking = 0;

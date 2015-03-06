@@ -1,17 +1,28 @@
 <!DOCTYPE html>
 <html lang="de">
   <head>
+  <title>SCM</title>
+
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
-    <link rel="stylesheet" href="http://lvps87-230-14-183.dedicated.hosteurope.de/public/css/basic.css">
+    <link rel="stylesheet" href="../public/css/basic.css">
+    <link rel="stylesheet" href="css/scm.css">
     <link rel="stylesheet" href="libs/datepicker/css/datepicker.css">
-    <script src="http://lvps87-230-14-183.dedicated.hosteurope.de/public/js/basic.js"></script>
+    <script src="../public/js/basic.js"></script>
     <script src= "libs/jquery/jquery-1.11.2.js" type="text/javascript"></script>
     <script src= "libs/datepicker/js/bootstrap-datepicker.js" type="text/javascript"></script>
   </head>
   
   <body>
     <nav class="navbar navbar-default">
+      <div class="navbar-header">
+          <button type="button" class="system-change navbar-toggle collapsed">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+          </button>
+      </div>
       <div class="container-fluid">
         <div class="collapse navbar-collapse" id="navbar-collapse">
           <ul class="nav navbar-nav">
@@ -22,6 +33,12 @@
         </div>
       </div>
     </nav>
+
+    <div class="system-nav" style="z-index:1">
+      <ul>
+        
+      </ul>
+    </div>
 
     <div class="container-fluid" id="container-in" style="display:none;">
       <div class="row">
@@ -38,8 +55,8 @@
               <input type="text" class="form-control" id="ortInput" placeholder="Ort">
               <label>Ranking</label>
               <div class="row">
-                <div class="col-md-6"><input type="text" class="form-control" id="rankFromInput" placeholder="von"></div>
-                <div class="col-md-6"><input type="text" class="form-control" id="rankToInput" placeholder="bis"></div>
+                <div class="col-md-6"><input type="number" class="form-control" id="rankFromInput" placeholder="von"></div>
+                <div class="col-md-6"><input type="number" class="form-control" id="rankToInput" placeholder="bis"></div>
               </div>
               <label>Bewertung</label>
               <div class="row">
@@ -117,18 +134,18 @@
           <div class="panel panel-primary">
             <div class="panel-heading">Filter</div>
             <div class="panel-body">
-              <label>Datum</label>
-              <input type="text" class="form-control datepicker" id="dateInput" placeholder="Datum">
+              <label>Bestelldatum</label>
+              <input type="date" class="form-control" id="dateInput" placeholder="Datum">
               <label>Lieferant</label>
-              <input type="text" class="form-control" id="lieferantInput" placeholder="Lieferant">
+              <input type="text" class="form-control" id="lieferantInputO" placeholder="Lieferant">
               <label>Bewertung</label>
               <div class="row">
-                <div class="col-md-6"><input type="text" class="form-control" id="rankFromInput" placeholder="von"></div>
-                <div class="col-md-6"><input type="text" class="form-control" id="rankToInput" placeholder="bis"></div>
+                <div class="col-md-6"><input type="text" class="form-control" id="fromInput" placeholder="von"></div>
+                <div class="col-md-6"><input type="text" class="form-control" id="toInput" placeholder="bis"></div>
               </div>
               <div class="row" style="margin-top:10px">
                 <div class="col-md-12" style="height:30px;">
-                  <button type="button" class="btn btn-success" style="position:absolute;right:15px;">Aktualisieren</button>
+                  <button type="button" id ="refresh-order" class="btn btn-success" style="position:absolute;right:15px;">Aktualisieren</button>
                 </div>                     
               </div>                    
             </div>

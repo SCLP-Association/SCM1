@@ -1,12 +1,37 @@
 function ajaxBuy(button) {
 	var lieferant = $("#lieferantInput").val();
 	var ort = $("#ortInput").val();
+	var min;
+	var max;
+	if ($("#rankFromInput").val() === "") {
+		$("#rankFromInput").val(0);
+		var min = 0;
+	} else {
+		var min = parseInt($("#rankFromInput").val());		
+	}
+	if ($("#rankToInput").val() === "") {
+		$("#rankToInput").val(100);
+		var max = 100;
+	} else {
+		var max = parseInt($("#rankToInput").val());		
+	}
+
+	var d = new Date();
+	var p = new Date();
+	var past = "";
+	if($('#optionsRadios3').is(':checked')) {
+		p.setDate(d.getDate() - 93);
+		past = p.toJSON();
+	} else if($('#optionsRadios2').is(':checked')) {
+		p.setDate(d.getDate() - 365);
+		past = p.toJSON();
+	}
 
 	$.ajax({
 		type: "POST",
-		url: "../buy.php",
+		url: "buy.php",
 		dataType: "jsonp",
-		data: {id: button, lieferant: lieferant, ort: ort},
+		data: {id: button, lieferant: lieferant, ort: ort, date: past},
 		success:	function(buyResult) {
 			if(buyResult.successful){
 				// HTML generieren
@@ -17,7 +42,16 @@ function ajaxBuy(button) {
 					var grade = parseInt(buyResult[i+2]);
 					var dur = buyResult[i+1][0];
 					var ranking = getRanking(dur, grade, 100, 200);
-					$("#table-in > tbody").append("<tr><td>"+buyResult[i][1]+"</td><td>"+buyResult[i][2]+"</td><td>"+buyResult[i][3]+"</td><td>"+buyResult[i][4]+"</td><td>"+buyResult[i+1][0]+"</td><td>"+buyResult[i+1][2]+"</td><td>"+buyResult[i+1][1]+"</td><td>"+ranking+"</td></tr>");
+					if (ranking >= min && ranking <= max) {
+						var rankString = "high";
+						if (ranking <= 33) {
+							var rankString = "low";
+						} else if (ranking <= 67) {
+							var rankString = "mid";
+						} 
+						var string = rankString + "'><div>"+ranking+"</div></td></tr>";
+						$("#table-in > tbody").append("<tr><td>"+buyResult[i][1]+"</td><td>"+buyResult[i][2]+"</td><td>"+buyResult[i][3]+"</td><td>"+buyResult[i][4]+"</td><td>"+buyResult[i+1][0]+"</td><td>"+buyResult[i+1][2]+"</td><td>"+buyResult[i+1][1]+"</td><td class='scm-rating scm-rating-" + string);
+					}
 					i++;
 					i++;
 				};
@@ -31,7 +65,7 @@ function ajaxBuy(button) {
 function getArticles() {
 	$.ajax({
 		type: "GET",
-		url: "../articles.php",
+		url: "articles.php",
 		dataType: "jsonp",
 		success:	function(articlesResult) {
 			if(articlesResult.successful){
@@ -63,7 +97,7 @@ function getTableWholesalers() {
 
 	$.ajax({
 		type: "POST",
-		url: "../sell.php",
+		url: "sell.php",
 		dataType: "jsonp",
 		data: {type: 0, lieferant: lieferant, ort: ort},
 		success:	function(wholesalers) {
@@ -89,7 +123,7 @@ function getTablePersons() {
 
 	$.ajax({
 		type: "POST",
-		url: "../sell.php",
+		url: "sell.php",
 		dataType: "jsonp",
 		data: {type: 1, lieferant: lieferant, ort: ort},
 		success:	function(persons) {
@@ -110,10 +144,33 @@ function getTablePersons() {
 }
 
 function getTableOrder() {
+	var lieferant = $("#lieferantInputO").val();
+	var ort = $("#ortInputO").val();
+	var min;
+	var max;
+	if ($("#fromInput").val() === "") {
+		$("#fromInput").val(0);
+		var min = 0;
+	} else {
+		var min = parseInt($("#fromInput").val());		
+	}
+	if ($("#toInput").val() === "") {
+		$("#toInput").val(10);
+		var max = 10;
+	} else {
+		var max = parseInt($("#toInput").val());		
+	}
+
+	var date = "";
+	if($('#dateInput').val() !== "") {
+		date = $('#dateInput').val();
+	}
+
 	$.ajax({
-		type: "GET",
-		url: "../order.php",
+		type: "POST",
+		url: "order.php",
 		dataType: "jsonp",
+		data: {lieferant: lieferant, ort: ort, min: min, max: max, date: date},
 		success:	function(order) {
 			if(order.successful){
 				// HTML generieren
@@ -121,11 +178,19 @@ function getTableOrder() {
 				$("#table-order").append("<tbody><tr><th>Firma</th><th>Ort</th><th>Bestelldatum</th><th>Lieferdatum</th><th>Bewertung</th></tr></tbody>");
 				$.each(order, function(index, entry) {
 					if(index !== 'successful') {
-						$("#table-order > tbody").append("<tr><td>"+entry[0]+"</td><td>"+entry[1]+"</td><td>"+entry[2]+"</td><td>"+entry[3]+"</td><td>"+entry[4]+"</td></td>");
+						var num = parseInt(entry[4]);
+						var rating = "high";
+						if (num <= 3) {
+							var rating = "low";
+						} else if (num <= 7) {
+							var rating = "mid";
+						} 
+						var string = rating + "'><div>"+num+"</div></td></td>";
+						$("#table-order > tbody").append("<tr><td>"+entry[0]+"</td><td>"+entry[1]+"</td><td>"+entry[2]+"</td><td>"+entry[3]+"</td><td class='scm-rating scm-rating-"+ string);
 					}
 				});
 			} else {
-				alert("Keine Personen in der Datenbank vorhanden!");
+				alert("Keine Bestellungen in der Datenbank vorhanden!");
 			}
 		},
 	});
@@ -140,15 +205,31 @@ function getRanking(durance, grade, count, countAll) {
 }
 
 $(document).ready(function () {
+	$.ajax({
+		type: "GET",
+		url: "system.php",
+		dataType: "jsonp",
+		success:	function(system) {
+			if(system.successful){
+				// HTML generieren
+				//$("#table-order > tbody").remove();
+				$.each(system, function(index, entry) {
+					if(index !== 'successful') {
+						if(entry[2] !== "dashboard") {
+							$(".system-nav > ul").append("<li><a href="+entry[2]+" title="+entry[0]+">"+entry[1]+"</a></li>");
+						} else {
+							$(".system-nav > ul").append("<li><a href=http://lvps87-230-14-183.dedicated.hosteurope.de/"+entry[2]+" title="+entry[0]+">"+entry[1]+"</a></li>");
+						}
+					}
+				});
+			}
+		},
+	});
+
 	var anchor;
 	anchor = window.location.hash;
 
-	if(anchor === '#buy') {
-		$("#container-out").hide();
-		$("#container-order").hide();
-		getArticles();
-		$("#container-in").show();
-	} else if(anchor === '#sell') {
+	if(anchor === '#sell') {
 		$("#container-in").hide();
 		$("#container-order").hide();
 		$("#container-out").show();
@@ -157,6 +238,11 @@ $(document).ready(function () {
 		$("#container-out").hide();
 		$("#container-order").show();
 		getTableOrder();
+	} else {
+		$("#container-out").hide();
+		$("#container-order").hide();
+		getArticles();
+		$("#container-in").show();
 	}
 });
 
@@ -211,4 +297,6 @@ $("#refreshSell").click(function() {
 	}
 });
 
-$('.datepicker').datepicker();
+$("#refresh-order").click(function() {
+	getTableOrder();
+});
